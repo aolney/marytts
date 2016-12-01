@@ -197,9 +197,9 @@ module.exports.Mary = function(host, port) {
 					if(voice.length > 0) {
 						var voiceParams = voice.split(' ');
 						voices[voiceParams[0]] = {
-							'locale': voiceParams[1],
-							'gender': voiceParams[2],
-							'type': voiceParams[3]
+							'locale': voiceParams[0],
+							'gender': voiceParams[1],
+							'type': voiceParams[2]
 						}
 					}
 				};
