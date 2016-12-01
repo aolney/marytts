@@ -254,6 +254,55 @@ module.exports.Mary = function(host, port) {
 		phonemes: function(words, locale, voice, callback) {
 			_phonemes(words, locale, voice, callback);
 		},
+		durations: function(text, options, callback) {
+			// If options are not provided let's hope the second parameter is the callback function
+			callback = typeof(options) === 'function' ? options : callback;
+			options = typeof(options) === 'object' ? options : {};
+
+			// Create the data to transmit
+			var data = [];
+			data['INPUT_TEXT'] = text;
+			data['INPUT_TYPE'] = (!('inputType' in options) || !(options.inputType in InputTypes)) ? 'TEXT' : options.inputType.toUpperCase();
+			data['OUTPUT_TYPE'] = (!('outputType' in options) || !(options.outputType in OutputTypes)) ? 'REALISED_DURATIONS' : options.outputType.toUpperCase();
+			data['LOCALE'] = (!('locale' in options)) ? 'en_US' : options.locale;
+			data['VOICE'] = (!('voice' in options)) ? 'cmu-slt-hsmm' : options.voice;
+			data['AUDIO'] = (!('audio' in options) || !(options.audio in AudioFormats)) ? 'WAVE_FILE' : options.audio.toUpperCase();
+
+			if('voice' in options && options.voice.length > 0) data['VOICE'] = options.voice;
+		
+			request(
+				{
+					url: _url + 'process',
+					method: 'POST',
+					form: data,
+					encoding: data['OUTPUT_TYPE']==='AUDIO' ? null : 'utf8'
+				},
+				function (error, response, body) {
+					if(error) {
+						console.error(error);
+						return;
+					}
+					//console.log(response);
+					if (response.statusCode == 200) {
+						if(data['OUTPUT_TYPE']==='AUDIO') {
+							var audioBuffer = new Buffer(body);
+							if(('base64' in options) && options.base64 === true) {
+								var format = response.headers['content-type'];
+								var base54Audio = 'data:' + format + ';base64,' + audioBuffer.toString('base64');
+								callback(base54Audio);
+							} else {
+								callback(audioBuffer);
+							}
+						} else {
+							callback(body);
+							//console.log(body);
+						}
+					} else {
+						console.error(response.statusCode + ': ' + response.statusMessage);
+					}
+				}
+			);
+		},
 		/**
 		 * Gets all available voices
 		 *
