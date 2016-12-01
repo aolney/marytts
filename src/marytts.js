@@ -197,9 +197,9 @@ module.exports.Mary = function(host, port) {
 					if(voice.length > 0) {
 						var voiceParams = voice.split(' ');
 						voices[voiceParams[0]] = {
-							'locale': voiceParams[0],
-							'gender': voiceParams[1],
-							'type': voiceParams[2]
+							'locale': voiceParams[1],
+							'gender': voiceParams[2],
+							'type': voiceParams[3]
 						}
 					}
 				};
@@ -291,9 +291,9 @@ module.exports.Mary = function(host, port) {
 						if(line.length > 0) {
 							var split = line.split(' ');
 							timings[ i - 1 ] = {
-								'time': split[1],
-								'number': split[2],
-								'phoneme': split[3]
+								'time': split[0],
+								'number': split[1],
+								'phoneme': split[2]
 							}
 						}
 					};
