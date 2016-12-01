@@ -3,7 +3,7 @@ var request = require('request'),
 	fs = require('fs');
 
 
-module.exports = function(host, port) {
+module.exports.Mary = function(host, port) {
 
 	/** @type {Object} The available InputTypes **/
 	var InputTypes = {
