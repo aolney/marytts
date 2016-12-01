@@ -265,7 +265,7 @@ module.exports.Mary = function(host, port) {
 			data['INPUT_TYPE'] = (!('inputType' in options) || !(options.inputType in InputTypes)) ? 'TEXT' : options.inputType.toUpperCase();
 			data['OUTPUT_TYPE'] = (!('outputType' in options) || !(options.outputType in OutputTypes)) ? 'REALISED_DURATIONS' : options.outputType.toUpperCase();
 			data['LOCALE'] = (!('locale' in options)) ? 'en_US' : options.locale;
-			data['VOICE'] = (!('voice' in options)) ? 'cmu-slt-hsmm' : options.voice;
+//			data['VOICE'] = (!('voice' in options)) ? 'cmu-slt-hsmm' : options.voice;
 			data['AUDIO'] = (!('audio' in options) || !(options.audio in AudioFormats)) ? 'WAVE_FILE' : options.audio.toUpperCase();
 
 			if('voice' in options && options.voice.length > 0) data['VOICE'] = options.voice;
@@ -284,19 +284,21 @@ module.exports.Mary = function(host, port) {
 					}
 					//console.log(response);
 					if (response.statusCode == 200) {
-						if(data['OUTPUT_TYPE']==='AUDIO') {
-							var audioBuffer = new Buffer(body);
-							if(('base64' in options) && options.base64 === true) {
-								var format = response.headers['content-type'];
-								var base54Audio = 'data:' + format + ';base64,' + audioBuffer.toString('base64');
-								callback(base54Audio);
-							} else {
-								callback(audioBuffer);
+					var lines = body.split('\n'),
+						timings = {};
+					for (var i = 1; i < lines.length; i++) {
+						var line = lines[i];
+						if(line.length > 0) {
+							var split = line.split(' ');
+							timings[ i - 1 ] = {
+								'time': split[1],
+								'number': split[2],
+								'phoneme': split[3]
 							}
-						} else {
-							callback(body);
-							//console.log(body);
 						}
+					};
+						callback(timings);
+							
 					} else {
 						console.error(response.statusCode + ': ' + response.statusMessage);
 					}
