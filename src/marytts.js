@@ -285,16 +285,16 @@ module.exports.Mary = function(host, port) {
 					//console.log(response);
 					if (response.statusCode == 200) {
 					var lines = body.split('\n'),
-						timings = {};
+						timings = [];
 					for (var i = 1; i < lines.length; i++) {
 						var line = lines[i];
 						if(line.length > 0) {
 							var split = line.split(' ');
-							timings[ i - 1 ] = {
+							timings.push( {
 								'time': split[0],
 								'number': split[1],
 								'phoneme': split[2]
-							}
+							})
 						}
 					};
 						callback(timings);
